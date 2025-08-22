@@ -10,6 +10,10 @@ An Express.js template with TypeScript, ESLint and Prettier
 - **Vitest**: Unit testing framework
 - **Husky**: Git hooks for pre-commit linting and formatting
 - **Modern Logging System**: Winston and Morgan for comprehensive logging
+- **Daily Log Rotation**: Automatic daily log file rotation with compression
+- **Rate Limiting**: Comprehensive API rate limiting with different configurations
+- **Performance Monitoring**: Request timing and slow request detection
+- **Error Handling**: Robust error handling with structured logging
 
 ## Logging System
 
@@ -21,7 +25,9 @@ This template includes a modern, robust logging system with the following featur
 - **Error tracking**: Comprehensive error logging with stack traces
 - **Performance monitoring**: Slow request detection and timing
 - **Structured logging**: JSON format for machine-readable logs
-- **Log rotation**: Automatic log file rotation with size limits
+- **Daily log rotation**: Automatic daily log file rotation with compression
+- **Rate limiting**: Comprehensive API rate limiting with logging
+- **Graceful shutdown**: Proper cleanup on application termination
 
 For detailed logging documentation, see [LOGGING.md](./LOGGING.md).
 

@@ -1,5 +1,6 @@
 import path from 'path';
 import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 // Custom format for console output
 const consoleFormat = winston.format.combine(
@@ -70,21 +71,25 @@ const transports = [
     format: consoleFormat,
   }),
 
-  // Error log file
-  new winston.transports.File({
-    filename: path.join(logsDir, 'error.log'),
+  // Error log file with daily rotation
+  new DailyRotateFile({
+    datePattern: 'YYYY-MM-DD',
+    filename: path.join(logsDir, 'error-%DATE%.log'),
     format: fileFormat,
     level: 'error',
-    maxFiles: 5,
-    maxsize: 5242880, // 5MB
+    maxFiles: '14d', // Keep logs for 14 days
+    maxSize: '20m', // 20MB max file size
+    zippedArchive: true, // Compress old logs
   }),
 
-  // Combined log file
-  new winston.transports.File({
-    filename: path.join(logsDir, 'combined.log'),
+  // Combined log file with daily rotation
+  new DailyRotateFile({
+    datePattern: 'YYYY-MM-DD',
+    filename: path.join(logsDir, 'combined-%DATE%.log'),
     format: fileFormat,
-    maxFiles: 5,
-    maxsize: 5242880, // 5MB
+    maxFiles: '14d', // Keep logs for 14 days
+    maxSize: '20m', // 20MB max file size
+    zippedArchive: true, // Compress old logs
   }),
 ];
 

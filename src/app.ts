@@ -6,6 +6,7 @@ import {
   requestLogger,
   responseLogger,
 } from '#middlewares/middlewares.js';
+import { authLimiter, getRateLimiter, strictLimiter } from '#middlewares/rateLimit.js';
 import logger from '#utils/logger.js';
 import express from 'express';
 
@@ -30,6 +31,9 @@ app.use(morganMiddleware);
 // Response logging
 app.use(responseLogger);
 
+// Rate limiting (apply to all routes)
+app.use(getRateLimiter());
+
 // Routes
 app.get('/', middleware, (req, res) => {
   logger.info('Home route accessed', {
@@ -50,6 +54,22 @@ app.get('/slow', async (req, res) => {
   logger.info('Slow route accessed');
   await new Promise((resolve) => setTimeout(resolve, 1500));
   res.json({ message: 'Slow response completed' });
+});
+
+// Test routes with different rate limiters
+app.get('/strict', strictLimiter, (req, res) => {
+  logger.info('Strict rate limited route accessed');
+  res.json({ message: 'This route has strict rate limiting (5 requests per 15 minutes)' });
+});
+
+app.post('/auth/login', authLimiter, (req, res) => {
+  logger.info('Auth route accessed');
+  res.json({ message: 'Login endpoint with auth rate limiting (10 requests per 15 minutes)' });
+});
+
+app.post('/auth/register', authLimiter, (req, res) => {
+  logger.info('Register route accessed');
+  res.json({ message: 'Register endpoint with auth rate limiting (10 requests per 15 minutes)' });
 });
 
 // 404 handler for unmatched routes
