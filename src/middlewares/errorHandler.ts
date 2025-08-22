@@ -41,7 +41,6 @@ export const errorHandler = (
       url: req.url,
       userAgent: req.get('User-Agent'),
     },
-    timestamp: new Date().toISOString(),
   });
 
   // Mongoose bad ObjectId

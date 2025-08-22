@@ -15,7 +15,6 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
   logger.info('Incoming request', {
     ip: req.ip,
     method: req.method,
-    timestamp: new Date().toISOString(),
     url: req.url,
     userAgent: req.get('User-Agent'),
   });
@@ -31,7 +30,6 @@ export const responseLogger = (req: Request, res: Response, next: NextFunction) 
       method: req.method,
       responseTime: Date.now() - (req as unknown as { startTime: number }).startTime,
       statusCode: res.statusCode,
-      timestamp: new Date().toISOString(),
       url: req.url,
     });
 

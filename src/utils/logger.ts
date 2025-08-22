@@ -3,18 +3,22 @@ import winston from 'winston';
 
 // Custom format for console output
 const consoleFormat = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.timestamp({ format: 'HH:mm:ss' }),
   winston.format.errors({ stack: true }),
-  winston.format.colorize(),
+  winston.format.colorize({ all: true }),
   winston.format.printf(({ level, message, stack, timestamp, ...meta }) => {
     let log = `${timestamp as string} [${level}]: ${message as string}`;
 
-    if (stack) {
-      log += `\n${stack as string}`;
+    // Add metadata in a single line format
+    if (Object.keys(meta).length > 0) {
+      const metaString = Object.entries(meta)
+        .map(([key, value]) => `${key}=${String(value)}`)
+        .join(' ');
+      log += ` | ${metaString}`;
     }
 
-    if (Object.keys(meta).length > 0) {
-      log += `\n${JSON.stringify(meta, null, 2)}`;
+    if (stack) {
+      log += `\n${stack as string}`;
     }
 
     return log;
@@ -87,7 +91,6 @@ const transports = [
 // Create the logger
 const logger = winston.createLogger({
   exitOnError: false,
-  format: fileFormat,
   level: level(),
   levels,
   transports,

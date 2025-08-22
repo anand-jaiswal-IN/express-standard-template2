@@ -42,9 +42,6 @@ const devFormat = ':method :url :status :response-time-ms - :ip - :user-agent';
 // Production format - more concise
 const prodFormat = ':method :url :status :response-time-ms - :ip';
 
-// Error format - includes request body for debugging
-const errorFormat = ':method :url :status :response-time-ms - :ip - :body';
-
 // Create Morgan middleware based on environment
 const createMorganMiddleware = () => {
   const env = process.env.NODE_ENV ?? 'development';
@@ -66,21 +63,6 @@ const createMorganMiddleware = () => {
   // Default format for other environments
   return morgan(prodFormat, { stream });
 };
-
-// Error logging middleware
-export const errorLoggingMiddleware = morgan(errorFormat, {
-  skip: (req, res) => res.statusCode < 400, // Only log errors
-  stream,
-});
-
-// Success logging middleware
-export const successLoggingMiddleware = morgan(prodFormat, {
-  skip: (req, res) => res.statusCode >= 400, // Only log successful requests
-  stream,
-});
-
-// Combined logging middleware
-export const combinedLoggingMiddleware = morgan(prodFormat, { stream });
 
 // Export the main Morgan middleware
 export default createMorganMiddleware();

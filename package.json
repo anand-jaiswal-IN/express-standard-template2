@@ -7,7 +7,7 @@
     "dev": "tsx --watch --env-file .env.development src/server.ts",
     "dev:staging": "tsx --watch --env-file .env.staging src/server.ts",
     "dev:prod": "tsx --watch --env-file .env.production src/server.ts",
-    "start": "node --env-file .env.production dist/server.js",
+    "start": "node dist/server.js",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "test": "vitest",
     "test:run": "vitest --run",

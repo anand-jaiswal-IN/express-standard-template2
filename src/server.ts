@@ -7,25 +7,30 @@ const server = app.listen(port, () => {
   logger.info(`Server started successfully`, {
     environment: process.env.NODE_ENV ?? 'development',
     port,
-    timestamp: new Date().toISOString(),
   });
 });
 
 // Graceful shutdown handling
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    logger.info('Process terminated');
-    process.exit(0);
-  });
-});
+const gracefulShutdown = (signal: string) => {
+  logger.info(`${signal} received, shutting down gracefully`);
 
-process.on('SIGINT', () => {
-  logger.info('SIGINT received, shutting down gracefully');
   server.close(() => {
-    logger.info('Process terminated');
+    logger.info('Server closed, process terminated');
     process.exit(0);
   });
+
+  // Force shutdown after 10 seconds
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', () => {
+  gracefulShutdown('SIGTERM');
+});
+process.on('SIGINT', () => {
+  gracefulShutdown('SIGINT');
 });
 
 // Unhandled promise rejection handler
