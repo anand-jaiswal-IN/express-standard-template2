@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   quality-checks:
@@ -19,23 +22,26 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "npm"
 
+      # Install dependencies safely
       - name: Install dependencies
-        run: npm ci
+        run: npm ci || npm install
 
-      - name: Run tests
-        run: npm run test:run
+      # Fix missing Rollup binary issue
+      - name: Ensure Rollup native binary exists
+        run: npm install @rollup/rollup-linux-x64-gnu --no-save
 
+      # Type check
       - name: Run TypeScript type checking
         run: npm run type-check
 
-      - name: Run ESLint and fix
-        run: npm run lint:fix
-
-      - name: Format with Prettier
-        run: npm run format
-
-      - name: Check for remaining ESLint errors
+      # Lint
+      - name: Run ESLint
         run: npm run lint
 
-      - name: Check for remaining formatting issues
+      # Check Prettier formatting
+      - name: Check Prettier formatting
         run: npm run format:check
+
+      # Run tests with Vitest
+      - name: Run Vitest tests
+        run: npm run test:run -- --reporter=verbose --coverage
