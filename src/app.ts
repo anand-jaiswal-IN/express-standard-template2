@@ -57,19 +57,14 @@ app.get('/slow', async (req, res) => {
 });
 
 // Test routes with different rate limiters
-app.get('/strict', strictLimiter, (req, res) => {
+app.get('/limiter/strict', strictLimiter, (req, res) => {
   logger.info('Strict rate limited route accessed');
   res.json({ message: 'This route has strict rate limiting (5 requests per 15 minutes)' });
 });
 
-app.post('/auth/login', authLimiter, (req, res) => {
+app.post('/limiter/auth', authLimiter, (req, res) => {
   logger.info('Auth route accessed');
   res.json({ message: 'Login endpoint with auth rate limiting (10 requests per 15 minutes)' });
-});
-
-app.post('/auth/register', authLimiter, (req, res) => {
-  logger.info('Register route accessed');
-  res.json({ message: 'Register endpoint with auth rate limiting (10 requests per 15 minutes)' });
 });
 
 // 404 handler for unmatched routes
