@@ -43,3 +43,9 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
   });
 });
+
+// Handle server errors
+server.on('error', (error: Error) => {
+  logger.error('Server error:', error);
+  process.exit(1);
+});
