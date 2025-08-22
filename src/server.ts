@@ -1,7 +1,7 @@
 import app from '#app.js';
 import logger from '#utils/logger.js';
 
-const port = process.env.PORT ?? '4000';
+const port = process.env.PORT ?? '3000';
 
 const server = app.listen(port, () => {
   logger.info(`Server started successfully`, {
