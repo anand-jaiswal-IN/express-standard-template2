@@ -40,7 +40,7 @@ app.get('/', middleware, (req, res) => {
     ip: req.ip,
     userAgent: req.get('User-Agent'),
   });
-  res.json({ message: 'Hello World!' });
+  res.json({ message: 'Hello Express!', timestamp: new Date().toISOString() });
 });
 
 // Test error route for logging
@@ -54,6 +54,20 @@ app.get('/slow', async (req, res) => {
   logger.info('Slow route accessed');
   await new Promise((resolve) => setTimeout(resolve, 1500));
   res.json({ message: 'Slow response completed' });
+});
+
+// Test health route for health check
+app.get('/health', (req, res) => {
+  logger.info('Health check route accessed', {
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+  });
+  res.status(200).json({
+    message: 'Server is healthy!',
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(), // server uptime in seconds
+  });
 });
 
 // Test routes with different rate limiters
