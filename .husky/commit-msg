@@ -1,0 +1,9 @@
+# Conventional Commit Format: type(scope?): message
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-zA-Z0-9_-]+\))?: .{1,72}$"
+
+if ! grep -qE "$PATTERN" "$1"; then
+  echo "❌ Invalid commit message!"
+  echo "✅ Please use Conventional Commits. Example:"
+  echo "   feat(auth): add JWT authentication"
+  exit 1
+fi

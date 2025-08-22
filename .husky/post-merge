@@ -1,0 +1,4 @@
+if [ -f bun.lock ]; then
+  echo "📦 Installing updated dependencies..."
+  bun install
+fi

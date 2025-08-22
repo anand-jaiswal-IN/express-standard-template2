@@ -1,0 +1,13 @@
+echo "🧪 Running tests before push..."
+bun run test:run || {
+  echo "❌ Tests failed! Push aborted."
+  exit 1
+}
+
+echo "🧩 Running type checks..."
+bun run type-check || {
+  echo "❌ Type errors detected! Push aborted."
+  exit 1
+}
+
+echo "✅ All checks passed! Push allowed."
