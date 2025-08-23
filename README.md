@@ -17,20 +17,24 @@ This project provides a robust and scalable starting point for building RESTful 
 ## Setup
 
 1.  **Clone the repository:**
+
     ```bash
     git clone https://github.com/anand-jaiswal-IN/express-standard-template2.git
     cd express-standard-template2
     ```
+
 2.  **Install dependencies:**
+
     ```bash
     bun install
     ```
+
 3.  **Create `.env` file:**
     Copy the `.env.example` file and rename it to `.env`.
+
     ```bash
     cp .env.example .env
     ```
-    [[memory:7025288]] [[memory:7025236]] [[memory:7025228]] [[memory:7025179]]
 
 ## Environment Variables
 
@@ -67,8 +71,6 @@ HELMET_CSP=
 - `bun run check-before-commit`: Runs ESLint and Prettier checks before commit.
 
 ## Project Structure
-
-[[memory:7025272]]
 
 ```
 .
@@ -117,7 +119,6 @@ This project uses the following security features:
 
 ## Running Tests
 
-[[memory:7025258]]
 Tests are written with [Vitest](https://vitest.dev/).
 To run all tests:
 
