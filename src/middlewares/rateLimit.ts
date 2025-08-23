@@ -1,10 +1,9 @@
-import logger from '#utils/logger.js';
 import rateLimit from 'express-rate-limit';
 
 // General API rate limiter
 export const generalLimiter = rateLimit({
   handler: (req, res) => {
-    logger.warn('Rate limit exceeded', {
+    console.warn('Rate limit exceeded', {
       ip: req.ip,
       method: req.method,
       url: req.url,
@@ -26,7 +25,7 @@ export const generalLimiter = rateLimit({
 // Strict rate limiter for sensitive routes
 export const strictLimiter = rateLimit({
   handler: (req, res) => {
-    logger.warn('Strict rate limit exceeded', {
+    console.warn('Strict rate limit exceeded', {
       ip: req.ip,
       method: req.method,
       url: req.url,
@@ -48,7 +47,7 @@ export const strictLimiter = rateLimit({
 // Auth rate limiter for login/register routes
 export const authLimiter = rateLimit({
   handler: (req, res) => {
-    logger.warn('Auth rate limit exceeded', {
+    console.warn('Auth rate limit exceeded', {
       ip: req.ip,
       method: req.method,
       url: req.url,
@@ -70,7 +69,7 @@ export const authLimiter = rateLimit({
 // Development rate limiter (more lenient)
 export const devLimiter = rateLimit({
   handler: (req, res) => {
-    logger.warn('Development rate limit exceeded', {
+    console.warn('Development rate limit exceeded', {
       ip: req.ip,
       method: req.method,
       url: req.url,

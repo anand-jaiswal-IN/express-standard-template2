@@ -1,67 +1,51 @@
 import { errorHandler, notFoundHandler } from '#middlewares/errorHandler.js';
-import morganMiddleware from '#middlewares/logging.js';
 import {
-  middleware,
+  corsMiddleware,
+  helmetMiddleware,
+  morganMiddleware,
   performanceMonitor,
-  requestLogger,
-  responseLogger,
 } from '#middlewares/middlewares.js';
 import { authLimiter, getRateLimiter, strictLimiter } from '#middlewares/rateLimit.js';
-import logger from '#utils/logger.js';
 import express from 'express';
 
 const app = express();
 
-// Trust proxy for accurate IP addresses
-app.set('trust proxy', 1);
+app.use(corsMiddleware); // Enable CORS with options
+app.use(helmetMiddleware); // Secure HTTP headers with options
+
+app.set('trust proxy', 1); // Trust proxy for accurate IP addresses
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Performance monitoring (must be early)
-app.use(performanceMonitor);
+app.use(performanceMonitor); // Performance monitoring (must be early)
+app.use(morganMiddleware); // Morgan HTTP request logging
 
-// Request logging
-app.use(requestLogger);
-
-// Morgan HTTP request logging
-app.use(morganMiddleware);
-
-// Response logging
-app.use(responseLogger);
-
-// Rate limiting (apply to all routes)
-app.use(getRateLimiter());
+app.use(getRateLimiter()); // Rate limiting (apply to all routes)
 
 // Routes
-app.get('/', middleware, (req, res) => {
-  logger.info('Home route accessed', {
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-  });
+app.get('/', (req, res) => {
+  console.info('Home route accessed');
   res.json({ message: 'Hello Express!', timestamp: new Date().toISOString() });
 });
 
 // Test error route for logging
 app.get('/error', (req, res, next) => {
-  logger.warn('Error test route accessed');
+  console.warn('Error test route accessed');
   next(new Error('This is a test error for logging'));
 });
 
 // Test slow route for performance monitoring
 app.get('/slow', async (req, res) => {
-  logger.info('Slow route accessed');
+  console.info('Slow route accessed');
   await new Promise((resolve) => setTimeout(resolve, 1500));
   res.json({ message: 'Slow response completed' });
 });
 
 // Test health route for health check
 app.get('/health', (req, res) => {
-  logger.info('Health check route accessed', {
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-  });
+  console.info('Health check route accessed');
   res.status(200).json({
     message: 'Server is healthy!',
     status: 'ok',
@@ -72,12 +56,12 @@ app.get('/health', (req, res) => {
 
 // Test routes with different rate limiters
 app.get('/limiter/strict', strictLimiter, (req, res) => {
-  logger.info('Strict rate limited route accessed');
+  console.info('Strict rate limited route accessed');
   res.json({ message: 'This route has strict rate limiting (5 requests per 15 minutes)' });
 });
 
 app.post('/limiter/auth', authLimiter, (req, res) => {
-  logger.info('Auth route accessed');
+  console.info('Auth route accessed');
   res.json({ message: 'Login endpoint with auth rate limiting (10 requests per 15 minutes)' });
 });
 

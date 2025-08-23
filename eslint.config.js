@@ -20,10 +20,24 @@ export default tseslint.config(
   },
   perfectionist.configs['recommended-natural'],
   {
-    files: ['**/*.test.ts', '**/*.spec.ts'],
-    plugins: {
-      vitest,
+    // Global rules
+    rules: {
+      // Disable base rule and configure TS rule
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_', // Ignore unused function parameters starting with "_"
+          varsIgnorePattern: '^_', // Ignore unused variables starting with "_"
+          caughtErrorsIgnorePattern: '^_', // Ignore unused caught errors like `catch (_err)`
+        },
+      ],
     },
+  },
+  {
+    // Vitest overrides for test files only
+    files: ['**/*.test.ts', '**/*.spec.ts'],
+    plugins: { vitest },
     rules: {
       ...vitest.configs.recommended.rules,
       '@typescript-eslint/unbound-method': 'off',

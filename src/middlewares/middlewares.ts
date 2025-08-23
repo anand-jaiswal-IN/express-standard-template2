@@ -1,43 +1,7 @@
-import logger from '#utils/logger.js';
+import cors from 'cors';
 import { NextFunction, Request, Response } from 'express';
-
-export const middleware = (req: Request, res: Response, next: NextFunction) => {
-  logger.debug('Middleware called', {
-    ip: req.ip,
-    method: req.method,
-    url: req.url,
-  });
-  next();
-};
-
-// Request logging middleware
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-  logger.info('Incoming request', {
-    ip: req.ip,
-    method: req.method,
-    url: req.url,
-    userAgent: req.get('User-Agent'),
-  });
-  next();
-};
-
-// Response logging middleware
-export const responseLogger = (req: Request, res: Response, next: NextFunction) => {
-  const originalSend = res.send;
-
-  res.send = function (data) {
-    logger.info('Outgoing response', {
-      method: req.method,
-      responseTime: Date.now() - (req as unknown as { startTime: number }).startTime,
-      statusCode: res.statusCode,
-      url: req.url,
-    });
-
-    return originalSend.call(this, data);
-  };
-
-  next();
-};
+import helmet from 'helmet';
+import morgan from 'morgan';
 
 // Performance monitoring middleware
 export const performanceMonitor = (req: Request, res: Response, next: NextFunction) => {
@@ -47,7 +11,7 @@ export const performanceMonitor = (req: Request, res: Response, next: NextFuncti
     const duration = Date.now() - (req as unknown as { startTime: number }).startTime;
 
     if (duration > 1000) {
-      logger.warn('Slow request detected', {
+      console.warn('Slow request detected', {
         duration: `${String(duration)}ms`,
         ip: req.ip,
         method: req.method,
@@ -58,3 +22,34 @@ export const performanceMonitor = (req: Request, res: Response, next: NextFuncti
 
   next();
 };
+
+// Morgon http middleware
+morgan.token('ip', (req: Request): string => {
+  return req.ip ?? '';
+});
+const devFormat = ':method :url :status :response-time ms - :ip - :user-agent';
+const prodFormat = ':method :url :status :response-time ms - :ip';
+export const morganMiddleware =
+  process.env.NODE_ENV === 'production'
+    ? morgan(prodFormat, {
+        skip: (_req, res) => res.statusCode < 400, // log only errors
+      })
+    : morgan(devFormat); // log everything in dev
+
+// cors middleware
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN ?? '*',
+};
+export const corsMiddleware = cors(corsOptions);
+
+// helmet middleware
+const helmetOptions: Record<string, unknown> = {};
+if (process.env.HELMET_CSP) {
+  helmetOptions.contentSecurityPolicy = {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'default-src': ["'self'", process.env.HELMET_CSP],
+    },
+  };
+}
+export const helmetMiddleware = helmet(helmetOptions);

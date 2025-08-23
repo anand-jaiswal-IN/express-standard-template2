@@ -1,4 +1,3 @@
-import logger from '#utils/logger.js';
 import { NextFunction, Request, Response } from 'express';
 
 // Custom error class for application errors
@@ -20,13 +19,12 @@ export const errorHandler = (
   err: AppError | Error,
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
 ) => {
-  let error: AppError = err instanceof AppError ? err : new AppError(err.message);
+  const error: AppError = err instanceof AppError ? err : new AppError(err.message);
 
   // Log error details
-  logger.error('Error occurred:', {
+  console.error('Error occurred:', {
     error: {
       message: err.message,
       name: err.name,
@@ -43,39 +41,6 @@ export const errorHandler = (
     },
   });
 
-  // Mongoose bad ObjectId
-  if (err.name === 'CastError') {
-    const message = 'Resource not found';
-    error = new AppError(message, 404);
-  }
-
-  // Mongoose duplicate key
-  if (err.name === 'MongoError' && (err as { code?: number }).code === 11000) {
-    const message = 'Duplicate field value entered';
-    error = new AppError(message, 400);
-  }
-
-  // Mongoose validation error
-  if (err.name === 'ValidationError') {
-    const validationError = err as unknown as { errors: Record<string, { message: string }> };
-    const message = Object.values(validationError.errors)
-      .map((val) => val.message)
-      .join(', ');
-    error = new AppError(message, 400);
-  }
-
-  // JWT errors
-  if (err.name === 'JsonWebTokenError') {
-    const message = 'Invalid token';
-    error = new AppError(message, 401);
-  }
-
-  if (err.name === 'TokenExpiredError') {
-    const message = 'Token expired';
-    error = new AppError(message, 401);
-  }
-
-  // Default error
   const statusCode = error.statusCode || 500;
   const message = error.message || 'Server Error';
 

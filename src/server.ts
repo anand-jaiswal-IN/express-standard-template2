@@ -1,10 +1,9 @@
 import app from '#app.js';
-import logger from '#utils/logger.js';
 
 const port = process.env.PORT ?? '3000';
 
 const server = app.listen(port, () => {
-  logger.info(`Server started successfully`, {
+  console.info(`Server started successfully`, {
     environment: process.env.NODE_ENV ?? 'development',
     port,
   });
@@ -12,16 +11,16 @@ const server = app.listen(port, () => {
 
 // Graceful shutdown handling
 const gracefulShutdown = (signal: string) => {
-  logger.info(`${signal} received, shutting down gracefully`);
+  console.info(`${signal} received, shutting down gracefully`);
 
   server.close(() => {
-    logger.info('Server closed, process terminated');
+    console.info('Server closed, process terminated');
     process.exit(0);
   });
 
   // Force shutdown after 10 seconds
   setTimeout(() => {
-    logger.error('Forced shutdown after timeout');
+    console.error('Forced shutdown after timeout');
     process.exit(1);
   }, 10000);
 };
@@ -35,7 +34,7 @@ process.on('SIGINT', () => {
 
 // Unhandled promise rejection handler
 process.on('unhandledRejection', (err) => {
-  logger.error('Unhandled Promise Rejection:', err);
+  console.error('Unhandled Promise Rejection:', err);
   server.close(() => {
     process.exit(1);
   });
@@ -43,7 +42,7 @@ process.on('unhandledRejection', (err) => {
 
 // Uncaught exception handler
 process.on('uncaughtException', (err) => {
-  logger.error('Uncaught Exception:', err);
+  console.error('Uncaught Exception:', err);
   server.close(() => {
     process.exit(1);
   });
@@ -51,6 +50,6 @@ process.on('uncaughtException', (err) => {
 
 // Handle server errors
 server.on('error', (error: Error) => {
-  logger.error('Server error:', error);
+  console.error('Server error:', error);
   process.exit(1);
 });

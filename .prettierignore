@@ -6,3 +6,8 @@ coverage
 .env
 .env*
 *.log
+logs
+dumps
+.vscode
+.github
+.git
